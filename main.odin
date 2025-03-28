@@ -8,6 +8,9 @@ import "core:mem"
 import "core:math"
 
 
+GRID_SIZE :: 50
+CELL_SIZE :: 32
+
 gen_noise_map :: proc(baseFrequency: f64, cellSize: f64, octaves: i8, persistance: f64, lacunarity: f64, seed: i64, coords: [2]int) -> f32 {
     totalNoise: f32
     frequency: f64 = baseFrequency / cellSize
@@ -31,6 +34,19 @@ gen_map :: proc(width, height: int) -> []f32 {
         for y in 0..<height {
             noise_value := gen_noise_map(0.2, 5, 2, 0.5, 4, seed, {x, y})
             size := y * width + x
+            if noise_value <= -0.5 {
+                LEVEL[size] = .Water
+                noise_value = -1
+            } else if noise_value > -0.5 && noise_value <= 0 {
+                LEVEL[size] = .Dirt
+                noise_value = -0.5
+            } else if noise_value > 0 && noise_value <= 0.5 {
+                LEVEL[size] = .Grass
+                noise_value = 0
+            } else {
+                noise_value = 1
+                LEVEL[size] = .Rock
+            }
             grid[size] = noise_value
         }
     }
@@ -52,7 +68,7 @@ main :: proc() {
         }
     }
 
-    rl.InitWindow(2000, 2000, "Road Generator")
+    rl.InitWindow(1600, 1600, "Road Generator")
     rl.SetTargetFPS(60)
 
 
@@ -83,10 +99,18 @@ main :: proc() {
     path := a_star_search(grid, rand_start, rand_end, grid_width, grid_height)
     defer delete(path)
 
+    for p in path {
+        size := p[1] * grid_width + p[0]
+        LEVEL[size] = .Road
+    }
+    load_texture()
+    create_4bit_map()
+
     for !rl.WindowShouldClose() {
         rl.BeginDrawing()
         rl.ClearBackground(rl.BLACK)
 
+        /*
         for cell, i in grid {
             normalized := (cell + 1) / 2
             gray_value := u8(normalized * 255 + 0.5)
@@ -106,17 +130,20 @@ main :: proc() {
 
             //rl.DrawRectangleV({x*32, y*32}, {32, 32}, colour)
         }
-
+        */
+        load_background()
         for p in path {
             x := f32(p[0])
             y := f32(p[1])
 
-            rl.DrawRectangleV({x*32, y*32}, {32, 32}, rl.RED)
+            //rl.DrawRectangleV({x*32, y*32}, {32, 32}, rl.RED)
         }
 
 
         rl.EndDrawing()
     }
 
+    clear_memory()
+    unload_texture()
     rl.CloseWindow()
 }

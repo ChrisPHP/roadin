@@ -27,7 +27,7 @@ is_valid :: proc(x, y: int) -> bool {
 
 is_unblocked :: proc(grid: []f32, x, y: int) -> bool {
     size := y * WIDTH + x
-    if grid[size] <= -0.5 || grid[size] > 0.5 {
+    if grid[size] == -1 || grid[size] == 1 {
         return true
     }
     return false
