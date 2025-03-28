@@ -26,9 +26,10 @@ gen_noise_map :: proc(baseFrequency: f64, cellSize: f64, octaves: i8, persistanc
 
 gen_map :: proc(width, height: int) -> []f32 {
     grid := make([]f32, width*height)
+    seed := rand.int63_max(10000)
     for x in 0..<width {
         for y in 0..<height {
-            noise_value := gen_noise_map(0.2, 5, 2, 0.5, 4, 2, {x, y})
+            noise_value := gen_noise_map(0.2, 5, 2, 0.5, 4, seed, {x, y})
             size := y * width + x
             grid[size] = noise_value
         }
@@ -54,13 +55,32 @@ main :: proc() {
     rl.InitWindow(2000, 2000, "Road Generator")
     rl.SetTargetFPS(60)
 
-    grid := gen_map(50,50)
+
+    grid_width := 50
+    grid_height := 50
+    grid := gen_map(grid_width,grid_height)
     defer delete(grid)
 
     rand_start := [2]int{int(rand.float32_range(0, 49)), 0}
+    for {
+        size := rand_start[1] * grid_width + rand_start[0]
+        if grid[size] <= -0.5 || grid[size] > 0.5 {
+            rand_start = [2]int{int(rand.float32_range(0, 49)), 0}
+        } else {
+            break
+        }
+    }
     rand_end := [2]int{int(rand.float32_range(0, 49)), 49}
+    for {
+        size := rand_end[1] * grid_width + rand_end[0]
+        if grid[size] <= -0.5 || grid[size] > 0.5 {
+            rand_end = [2]int{int(rand.float32_range(0, 49)), 49}
+        } else {
+            break
+        }
+    }
 
-    path := a_star_search(grid, rand_start, rand_end, 50, 50)
+    path := a_star_search(grid, rand_start, rand_end, grid_width, grid_height)
     defer delete(path)
 
     for !rl.WindowShouldClose() {
@@ -70,7 +90,6 @@ main :: proc() {
         for cell, i in grid {
             normalized := (cell + 1) / 2
             gray_value := u8(normalized * 255 + 0.5)
-            colour := rl.Color{gray_value, gray_value, gray_value, 255}
 
             x :f32= f32(i % 50)
             y :f32= f32(i / 50)

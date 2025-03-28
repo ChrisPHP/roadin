@@ -105,8 +105,6 @@ new_open_list_cell :: proc(f: f32, x, y: int) -> ^open_list {
 }
 
 a_star_search :: proc(grid: []f32, start, dest: [2]int, width, height: int) -> [][2]int {
-    fmt.println(start, dest)
-
     WIDTH = width
     HEIGHT = height
     
