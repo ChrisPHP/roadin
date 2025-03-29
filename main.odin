@@ -162,12 +162,7 @@ main :: proc() {
         }
         */
         load_background()
-        for p in path {
-            x := f32(p[0])
-            y := f32(p[1])
-
-            //rl.DrawRectangleV({x*32, y*32}, {32, 32}, rl.RED)
-        }
+        render_foliage()
 
 
         rl.EndDrawing()

@@ -128,6 +128,12 @@ create_4bit_map :: proc() {
                     }
                     TILE_LAYERS[size] = new_layer
                 }
+
+                if key != TILE_ENUMS.Road {
+                    if autotile == 15 {
+                        randomly_place_foliage({x,y}, key)
+                    }
+                }
             }
         }
     }
