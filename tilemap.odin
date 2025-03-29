@@ -14,11 +14,11 @@ layerStruct :: struct {
 }
 
 TILE_ENUMS :: enum {
+    Road,
     Water,
     Dirt,
     Grass,
     Rock,
-    Road
 }
 
 LEVEL := make([]TILE_ENUMS, 50*50)

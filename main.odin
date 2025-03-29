@@ -53,6 +53,33 @@ gen_map :: proc(width, height: int) -> []f32 {
     return grid
 }
 
+widen_path :: proc(grid: []f32, path: [][2]int) -> [][2]int {
+
+    widen_path: [dynamic][2]int
+    defer delete(widen_path)
+
+    for p, i in path {
+        append(&widen_path, p)
+        adjacent_positions := [][2]int{
+            {p[0]+1, p[1]},
+            {p[0]-1, p[1]},
+            {p[0], p[1]+1},
+            {p[0], p[1]-1}
+        }
+
+        for adj in adjacent_positions {
+            if is_valid(adj[0], adj[1]) && !is_unblocked(grid, adj[0], adj[1]) {
+                append(&widen_path, adj)
+            }
+        }
+    }
+
+    fixed_data := make([][2]int, len(widen_path))
+    copy(fixed_data, widen_path[:])
+
+    return fixed_data
+}
+
 main :: proc() {
     tracking_allocator: mem.Tracking_Allocator
     mem.tracking_allocator_init(&tracking_allocator, context.allocator)
@@ -97,12 +124,15 @@ main :: proc() {
     }
 
     path := a_star_search(grid, rand_start, rand_end, grid_width, grid_height)
+    path_2 := widen_path(grid, path)
+    defer delete(path_2)
     defer delete(path)
 
-    for p in path {
+    for p in path_2 {
         size := p[1] * grid_width + p[0]
         LEVEL[size] = .Road
     }
+
     load_texture()
     create_4bit_map()
 

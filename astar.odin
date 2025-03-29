@@ -44,9 +44,15 @@ calculate_heuristics :: proc(x, y: int, dest: [2]int) -> f32 {
     dest_x := dest[0]
     dest_y := dest[1]
 
+    dx := abs(dest_x - x)
+    dy := abs(dest_y - y)
+    return f32(dx + dy)
+
+    /*
     return math.sqrt_f32(
         math.pow_f32(f32(x - dest_x), 2) + math.pow_f32(f32(dest_x - dest_y), 2)
     )
+    */
 }
 
 get_noise_value :: proc(value: f32) -> f32 {
@@ -162,7 +168,8 @@ a_star_search :: proc(grid: []f32, start, dest: [2]int, width, height: int) -> [
         size := j * WIDTH + i
         closedList[size] = true
 
-        directions := [8][2]int{{0,1},{0,-1},{1,0},{-1,0},{1,1},{1,-1},{-1,1},{-1,-1}}
+        //directions := [8][2]int{{0,1},{0,-1},{1,0},{-1,0},{1,1},{1,-1},{-1,1},{-1,-1}}
+        directions := [4][2]int{{0,1},{0,-1},{1,0},{-1,0}}
         for dir in directions {
             new_i := i + dir[0]
             new_j := j + dir[1]
