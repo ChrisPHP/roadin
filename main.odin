@@ -170,5 +170,6 @@ main :: proc() {
 
     clear_memory()
     unload_texture()
+    delete(FOLIAGE_MAP)
     rl.CloseWindow()
 }

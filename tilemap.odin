@@ -21,10 +21,10 @@ TILE_ENUMS :: enum {
     Rock,
 }
 
-LEVEL := make([]TILE_ENUMS, 50*50)
+LEVEL: [50*50]TILE_ENUMS
 
 WORLD_TEXTURE: WORLD_TEXTURE_STRUCT
-TILE_LAYERS := make(map[int][]layerStruct, GRID_SIZE*GRID_SIZE)
+TILE_LAYERS := map[int][]layerStruct{}
 
 TILE_BITMASK := [TILE_ENUMS][2]int {
     .Water={0,3},

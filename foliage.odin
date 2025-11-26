@@ -9,7 +9,7 @@ plant_struct :: struct {
     tile: [2]int
 }
 
-FOLIAGE_MAP := make(map[int]plant_struct)
+FOLIAGE_MAP := map[int]plant_struct{}
 
 
 add_foliage :: proc(p: [2]int, type: TILE_ENUMS) {
